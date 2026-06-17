@@ -1,5 +1,5 @@
 <?php
-// Database configuration for Laragon/XAMPP
+// Database configuration for AWS Elastic Beanstalk / RDS
 // Adjust these values to match your MySQL setup
 
 declare(strict_types=1);
