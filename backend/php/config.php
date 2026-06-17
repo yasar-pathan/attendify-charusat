@@ -31,10 +31,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-const DB_HOST = getenv('RDS_HOSTNAME') ?: '127.0.0.1';
-const DB_NAME = getenv('RDS_DB_NAME') ?: 'attendify';
-const DB_USER = getenv('RDS_USERNAME') ?: 'root';
-const DB_PASS = getenv('RDS_PASSWORD') ?: 'root123';
+define('DB_HOST', getenv('RDS_HOSTNAME') ?: '127.0.0.1');
+define('DB_NAME', getenv('RDS_DB_NAME') ?: 'attendify');
+define('DB_USER', getenv('RDS_USERNAME') ?: 'root');
+define('DB_PASS', getenv('RDS_PASSWORD') ?: 'root123');
 
 function get_pdo(): PDO {
     static $pdo = null;
