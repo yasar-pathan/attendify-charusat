@@ -38,7 +38,8 @@ define('DB_NAME', getenv('RDS_DB_NAME') ?: 'attendify');
 define('DB_USER', getenv('RDS_USERNAME') ?: 'root');
 define('DB_PASS', getenv('RDS_PASSWORD') ?: 'root123');
 
-function get_pdo(): PDO {
+function get_pdo(): PDO
+{
     static $pdo = null;
     if ($pdo instanceof PDO) {
         return $pdo;
@@ -46,9 +47,9 @@ function get_pdo(): PDO {
 
     $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
     $options = [
-        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_EMULATE_PREPARES   => false,
+        PDO::ATTR_EMULATE_PREPARES => false,
     ];
 
     try {
@@ -62,7 +63,8 @@ function get_pdo(): PDO {
     return $pdo;
 }
 
-function respond_json(int $status, array $data): void {
+function respond_json(int $status, array $data): void
+{
     http_response_code($status);
     echo json_encode($data);
     exit;
