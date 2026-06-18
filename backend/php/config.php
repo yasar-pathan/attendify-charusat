@@ -121,7 +121,7 @@ function initialize_tables_if_needed(PDO $pdo): void
             `student_id` varchar(20) NOT NULL,
             `selfie` longtext NOT NULL,
             `gmail` varchar(100) NOT NULL,
-            `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+            `attendance_time` timestamp DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (`id`),
             KEY `idx_student_date` (`student_id`, `date`),
             KEY `idx_dept_sem` (`dept`, `sem`)
