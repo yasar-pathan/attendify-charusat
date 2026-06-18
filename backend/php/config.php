@@ -54,13 +54,79 @@ function get_pdo(): PDO
 
     try {
         $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+        // Automatically check and initialize tables if they don't exist
+        initialize_tables_if_needed($pdo);
     } catch (Throwable $e) {
         http_response_code(500);
-        echo json_encode(['success' => false, 'error' => 'Database connection failed']);
+        echo json_encode(['success' => false, 'error' => 'Database connection failed: ' . $e->getMessage()]);
         exit;
     }
 
     return $pdo;
+}
+
+function initialize_tables_if_needed(PDO $pdo): void
+{
+    // 1. Create Teachers table if it doesn't exist
+    $stmt = $pdo->query("SHOW TABLES LIKE 'Teachers'");
+    if ($stmt->rowCount() === 0) {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `Teachers` (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `Full_Name` varchar(100) NOT NULL,
+            `Email` varchar(100) NOT NULL UNIQUE,
+            `Password` varchar(255) NOT NULL,
+            `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`),
+            UNIQUE KEY `unique_email` (`Email`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    }
+
+    // 2. Create students table if it doesn't exist
+    $stmt = $pdo->query("SHOW TABLES LIKE 'students'");
+    if ($stmt->rowCount() === 0) {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `students` (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `student_id` varchar(20) NOT NULL UNIQUE,
+            `name` varchar(100) NOT NULL,
+            `email` varchar(100) NOT NULL UNIQUE,
+            `department` enum('IT', 'CSE', 'CE') NOT NULL,
+            `division` varchar(10) NOT NULL,
+            `semester` int(2) NOT NULL,
+            `is_active` boolean DEFAULT TRUE,
+            `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`),
+            UNIQUE KEY `unique_student_id` (`student_id`),
+            UNIQUE KEY `unique_email` (`email`),
+            KEY `idx_department` (`department`),
+            KEY `idx_semester` (`semester`),
+            KEY `idx_active` (`is_active`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    }
+
+    // 3. Create attendance_records table if it doesn't exist
+    $stmt = $pdo->query("SHOW TABLES LIKE 'attendance_records'");
+    if ($stmt->rowCount() === 0) {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS `attendance_records` (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `MOT` varchar(20) NOT NULL,
+            `timeslot` varchar(50) NOT NULL,
+            `dept` varchar(10) NOT NULL,
+            `division` varchar(20) NOT NULL,
+            `subject` varchar(100) NOT NULL,
+            `faculty_name` varchar(100) NOT NULL,
+            `sem` int(2) NOT NULL,
+            `date` date NOT NULL,
+            `student_id` varchar(20) NOT NULL,
+            `selfie` longtext NOT NULL,
+            `gmail` varchar(100) NOT NULL,
+            `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`),
+            KEY `idx_student_date` (`student_id`, `date`),
+            KEY `idx_dept_sem` (`dept`, `sem`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    }
 }
 
 function respond_json(int $status, array $data): void
