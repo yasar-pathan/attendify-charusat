@@ -103,6 +103,7 @@ export const StudentAuth = () => {
       const client = (window as any).google.accounts.oauth2.initTokenClient({
         client_id: GOOGLE_CLIENT_ID,
         scope: "email profile openid",
+        prompt: "select_account",
         callback: async (tokenResponse: any) => {
           if (tokenResponse.error_description) {
             console.error("Google auth callback error:", tokenResponse.error_description);
