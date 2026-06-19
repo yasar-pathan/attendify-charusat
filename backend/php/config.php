@@ -122,10 +122,33 @@ function initialize_tables_if_needed(PDO $pdo): void
             `selfie` longtext NOT NULL,
             `gmail` varchar(100) NOT NULL,
             `attendance_time` timestamp DEFAULT CURRENT_TIMESTAMP,
+            `latitude` decimal(10,8) DEFAULT NULL,
+            `longitude` decimal(11,8) DEFAULT NULL,
+            `accuracy` decimal(10,2) DEFAULT NULL,
             PRIMARY KEY (`id`),
             KEY `idx_student_date` (`student_id`, `date`),
             KEY `idx_dept_sem` (`dept`, `sem`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    } else {
+        // Table exists, check for missing columns and add them dynamically
+        $existingColumns = [];
+        $columnsStmt = $pdo->query("SHOW COLUMNS FROM `attendance_records`");
+        while ($row = $columnsStmt->fetch(PDO::FETCH_ASSOC)) {
+            $existingColumns[] = strtolower($row['Field']);
+        }
+        
+        if (!in_array('attendance_time', $existingColumns, true)) {
+            $pdo->exec("ALTER TABLE `attendance_records` ADD COLUMN `attendance_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
+        }
+        if (!in_array('latitude', $existingColumns, true)) {
+            $pdo->exec("ALTER TABLE `attendance_records` ADD COLUMN `latitude` DECIMAL(10,8) DEFAULT NULL");
+        }
+        if (!in_array('longitude', $existingColumns, true)) {
+            $pdo->exec("ALTER TABLE `attendance_records` ADD COLUMN `longitude` DECIMAL(11,8) DEFAULT NULL");
+        }
+        if (!in_array('accuracy', $existingColumns, true)) {
+            $pdo->exec("ALTER TABLE `attendance_records` ADD COLUMN `accuracy` DECIMAL(10,2) DEFAULT NULL");
+        }
     }
 }
 

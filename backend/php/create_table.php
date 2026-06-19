@@ -22,6 +22,9 @@ try {
         `selfie` longtext NOT NULL,
         `gmail` varchar(100) NOT NULL,
         `attendance_time` timestamp DEFAULT CURRENT_TIMESTAMP,
+        `latitude` decimal(10,8) DEFAULT NULL,
+        `longitude` decimal(11,8) DEFAULT NULL,
+        `accuracy` decimal(10,2) DEFAULT NULL,
         PRIMARY KEY (`id`),
         KEY `idx_student_date` (`student_id`, `date`),
         KEY `idx_dept_sem` (`dept`, `sem`)
